@@ -52,6 +52,11 @@ def get_file_size(filepath):
 def index():
     return render_template('index.html')
 
+@app.route('/health')
+def health():
+    """Simple health check endpoint for monitoring systems"""
+    return "OK"
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'files' not in request.files:
@@ -69,13 +74,9 @@ def upload_file():
     
     for file in files:
         if file and file.filename:
-            # Generate unique filename with timestamp
+            # Use original filename (will overwrite if exists)
             filename = secure_filename(file.filename)
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')  # Add microseconds for uniqueness
-            name, ext = os.path.splitext(filename)
-            unique_filename = f"{timestamp}_{name}{ext}"
-            
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             
             try:
                 file.save(filepath)
@@ -173,7 +174,8 @@ def admin_panel():
     if os.path.exists(UPLOAD_FOLDER):
         for filename in os.listdir(UPLOAD_FOLDER):
             filepath = os.path.join(UPLOAD_FOLDER, filename)
-            if os.path.isfile(filepath):
+            # Skip .gitkeep and other hidden files
+            if os.path.isfile(filepath) and not filename.startswith('.'):
                 files.append({
                     'name': filename,
                     'size': get_file_size(filepath),
