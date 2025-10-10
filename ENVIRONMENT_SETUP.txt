@@ -1,0 +1,132 @@
+╔═══════════════════════════════════════════════════════════╗
+║        MYMSNGROUP File Upload Portal                      ║
+║        Environment Variable Configuration                 ║
+╚═══════════════════════════════════════════════════════════╝
+
+🔐 ADMIN PASSWORD CONFIGURATION
+
+Environment Variable: ADMIN_PASSWORD
+Default Value: admin123 (if not set)
+
+═══════════════════════════════════════════════════════════
+
+📋 SETUP METHODS:
+
+1️⃣  Temporary (Current Session Only)
+   
+   export ADMIN_PASSWORD="your-secure-password"
+   python3 app.py
+
+
+2️⃣  Using .env File (Recommended)
+   
+   # Step 1: Copy example file
+   cp env.example .env
+   
+   # Step 2: Edit .env file
+   nano .env
+   # or
+   vi .env
+   
+   # Step 3: Change ADMIN_PASSWORD value
+   ADMIN_PASSWORD=your-secure-password
+   
+   # Step 4: Run app (will auto-load from .env)
+   python3 app.py
+
+
+3️⃣  Permanent (User Profile)
+   
+   # Add to ~/.bashrc or ~/.zshrc
+   echo 'export ADMIN_PASSWORD="your-secure-password"' >> ~/.bashrc
+   
+   # Reload profile
+   source ~/.bashrc
+   
+   # Run app
+   python3 app.py
+
+
+4️⃣  One-time Run
+   
+   ADMIN_PASSWORD="your-secure-password" python3 app.py
+
+
+5️⃣  Systemd Service
+   
+   # In your service file: /etc/systemd/system/portal.service
+   [Service]
+   Environment="ADMIN_PASSWORD=your-secure-password"
+   ExecStart=/usr/bin/python3 /path/to/app.py
+
+
+6️⃣  Docker
+   
+   docker run -e ADMIN_PASSWORD="your-secure-password" ...
+
+═══════════════════════════════════════════════════════════
+
+⚠️  WARNING MESSAGES:
+
+If you don't set ADMIN_PASSWORD, you'll see:
+"⚠️  WARNING: Using default password! Set ADMIN_PASSWORD 
+environment variable in production."
+
+This is normal for development but should be set in production!
+
+═══════════════════════════════════════════════════════════
+
+✅ VERIFICATION:
+
+Check if variable is set:
+   echo $ADMIN_PASSWORD
+
+Test login:
+   1. Start app: python3 app.py
+   2. Visit: http://localhost:5000/admin/login
+   3. Enter your password
+   4. Should login successfully
+
+═══════════════════════════════════════════════════════════
+
+🔒 SECURITY BEST PRACTICES:
+
+✅ DO:
+   • Use strong passwords (mix of letters, numbers, symbols)
+   • Use different passwords for dev/staging/production
+   • Keep .env file out of version control (already in .gitignore)
+   • Set env variable in production environment
+
+❌ DON'T:
+   • Don't use default password 'admin123' in production
+   • Don't commit passwords to Git
+   • Don't share passwords in plain text
+   • Don't reuse passwords across systems
+
+═══════════════════════════════════════════════════════════
+
+📝 QUICK REFERENCE:
+
+Variable Name:    ADMIN_PASSWORD
+Default Value:    admin123
+Example File:     env.example
+Config in Code:   app.py (lines 19-25)
+Used in:          Admin login page
+
+═══════════════════════════════════════════════════════════
+
+🚀 QUICK START:
+
+Development (testing):
+   python3 app.py
+   # Uses default: admin123
+
+Production (secure):
+   export ADMIN_PASSWORD="MySecurePassword123!"
+   python3 app.py
+   # Uses your custom password
+
+═══════════════════════════════════════════════════════════
+
+For more information, see README.md
+

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - MYMSNGROUP{% endblock %}
+
+{% block content %}
+<div class="auth-section">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h2>Admin Login</h2>
+                <p>MYMSNGROUP File Portal Administration</p>
+            </div>
+            
+            <form method="POST" action="{{ url_for('admin_login') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Admin Password
+                    </label>
+                    <input type="password" id="password" name="password" class="form-input" 
+                           placeholder="Enter admin password" required autofocus>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <a href="{{ url_for('index') }}" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Upload Portal
+                </a>
+            </div>
+        </div>
+        
+        <div class="auth-info">
+            <div class="info-badge">
+                <i class="fas fa-shield-alt"></i>
+                <p>Secure Admin Access</p>
+            </div>
+            <p class="info-text">
+                This area is restricted to authorized administrators only. 
+                All login attempts are logged and protected with brute force prevention.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
