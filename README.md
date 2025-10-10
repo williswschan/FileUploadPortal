@@ -13,10 +13,6 @@ pip3 install -r requirements.txt
 ```bash
 # Set environment variable
 export ADMIN_PASSWORD="your-secure-password"
-
-# Or create .env file (copy from env.example)
-cp env.example .env
-# Then edit .env and change the password
 ```
 
 ### 3. Run the Application
@@ -47,16 +43,12 @@ python3 app.py
 
 **Method 1: Environment Variable (Recommended)**
 ```bash
-# Linux/Mac - temporary (current session only)
+# Temporary (current session only)
 export ADMIN_PASSWORD="your-secure-password"
 
-# Linux/Mac - permanent (add to ~/.bashrc or ~/.zshrc)
+# Permanent (add to ~/.bashrc or ~/.zshrc)
 echo 'export ADMIN_PASSWORD="your-secure-password"' >> ~/.bashrc
 source ~/.bashrc
-
-# Or use .env file
-cp env.example .env
-# Edit .env and change ADMIN_PASSWORD value
 ```
 
 **Method 2: Systemd Service**
