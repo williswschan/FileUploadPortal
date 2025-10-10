@@ -8,7 +8,7 @@ A secure file upload portal with admin management.
 
 ```bash
 # Start the application
-docker-compose up -d
+docker compose up -d
 
 # Access at: http://localhost:5000
 ```
@@ -52,28 +52,28 @@ python3 app.py
 ### Start with Docker Compose
 ```bash
 # Start in background
-docker-compose up -d
+docker compose up -d
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop
-docker-compose down
+docker compose down
 ```
 
 ### Set Password with Docker
 ```bash
 # Method 1: Environment variable
 export ADMIN_PASSWORD="your-secure-password"
-docker-compose up -d
+docker compose up -d
 
-# Method 2: Direct in docker-compose.yml
-# Edit docker-compose.yml and change:
+# Method 2: Direct in docker compose.yml
+# Edit docker compose.yml and change:
 # - ADMIN_PASSWORD=your-secure-password
 
 # Method 3: Using .env file
 echo "ADMIN_PASSWORD=your-secure-password" > .env
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Manual Docker Commands
@@ -100,7 +100,7 @@ docker rm mymsngroup-portal
 
 ### Rebuild After Code Changes
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## Configuration
@@ -127,9 +127,9 @@ Environment="ADMIN_PASSWORD=your-secure-password"
 ```bash
 # Set before starting
 export ADMIN_PASSWORD="your-secure-password"
-docker-compose up -d
+docker compose up -d
 
-# Or edit docker-compose.yml directly
+# Or edit docker compose.yml directly
 ```
 
 ### Change Max File Size
