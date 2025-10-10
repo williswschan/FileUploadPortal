@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: mymsngroup-portal
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount uploads directory for persistent storage
+      - ./uploads:/app/uploads
+    environment:
+      # Admin password - change this or use environment variable
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+    restart: unless-stopped
+    networks:
+      - portal-network
+
+networks:
+  portal-network:
+    driver: bridge
+

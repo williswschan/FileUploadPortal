@@ -4,23 +4,33 @@ A secure file upload portal with admin management.
 
 ## Quick Start
 
-### 1. Install Dependencies
+### Option 1: Docker (Recommended) 🐳
+
+```bash
+# Start the application
+docker-compose up -d
+
+# Access at: http://localhost:5000
+```
+
+### Option 2: Python
+
+**1. Install Dependencies**
 ```bash
 pip3 install -r requirements.txt
 ```
 
-### 2. Set Admin Password (Recommended)
+**2. Set Admin Password (Recommended)**
 ```bash
-# Set environment variable
 export ADMIN_PASSWORD="your-secure-password"
 ```
 
-### 3. Run the Application
+**3. Run the Application**
 ```bash
 python3 app.py
 ```
 
-### 4. Access the Portal
+**4. Access the Portal**
 - **URL:** http://localhost:5000
 - **Admin Login:** http://localhost:5000/admin/login
 
@@ -36,6 +46,62 @@ python3 app.py
 - Admin panel (view, download, delete files)
 - Brute force protection (5 attempts, 1-min lockout)
 - Responsive design (mobile, tablet, desktop)
+
+## Docker Deployment
+
+### Start with Docker Compose
+```bash
+# Start in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
+```
+
+### Set Password with Docker
+```bash
+# Method 1: Environment variable
+export ADMIN_PASSWORD="your-secure-password"
+docker-compose up -d
+
+# Method 2: Direct in docker-compose.yml
+# Edit docker-compose.yml and change:
+# - ADMIN_PASSWORD=your-secure-password
+
+# Method 3: Using .env file
+echo "ADMIN_PASSWORD=your-secure-password" > .env
+docker-compose up -d
+```
+
+### Manual Docker Commands
+```bash
+# Build image
+docker build -t mymsngroup-portal .
+
+# Run container
+docker run -d \
+  --name mymsngroup-portal \
+  -p 5000:5000 \
+  -e ADMIN_PASSWORD="your-password" \
+  -v ./uploads:/app/uploads \
+  --restart unless-stopped \
+  mymsngroup-portal
+
+# View logs
+docker logs -f mymsngroup-portal
+
+# Stop and remove
+docker stop mymsngroup-portal
+docker rm mymsngroup-portal
+```
+
+### Rebuild After Code Changes
+```bash
+docker-compose up -d --build
+```
 
 ## Configuration
 
@@ -57,9 +123,13 @@ source ~/.bashrc
 Environment="ADMIN_PASSWORD=your-secure-password"
 ```
 
-**Method 3: Docker**
+**Method 3: Docker Environment**
 ```bash
-docker run -e ADMIN_PASSWORD="your-secure-password" ...
+# Set before starting
+export ADMIN_PASSWORD="your-secure-password"
+docker-compose up -d
+
+# Or edit docker-compose.yml directly
 ```
 
 ### Change Max File Size
