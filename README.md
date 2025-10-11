@@ -4,7 +4,22 @@ A secure file upload portal with admin management.
 
 ## Quick Start
 
-### Option 1: Docker (Recommended) 🐳
+### Option 1: Docker Hub (Recommended) 🐳
+
+```bash
+# Pull and run from Docker Hub
+docker run -d \
+  --name fileuploadportal \
+  -p 5000:5000 \
+  -e ADMIN_PASSWORD="your-secure-password" \
+  -v ./uploads:/app/uploads \
+  --restart unless-stopped \
+  williswschan/fileuploadportal:latest
+
+# Access at: http://localhost:5000
+```
+
+### Option 2: Docker Compose
 
 ```bash
 # Start the application
@@ -13,7 +28,7 @@ docker compose up -d
 # Access at: http://localhost:5000
 ```
 
-### Option 2: Python
+### Option 3: Python
 
 **1. Install Dependencies**
 ```bash
@@ -76,19 +91,22 @@ echo "ADMIN_PASSWORD=your-secure-password" > .env
 docker compose up -d
 ```
 
-### Manual Docker Commands
+### Pull from Docker Hub
 ```bash
-# Build image
-docker build -t fileuploadportal .
+# Pull latest version
+docker pull williswschan/fileuploadportal:latest
 
-# Run container
+# Pull specific version
+docker pull williswschan/fileuploadportal:v1.5
+
+# Run container from Docker Hub
 docker run -d \
   --name fileuploadportal \
   -p 5000:5000 \
   -e ADMIN_PASSWORD="your-password" \
   -v ./uploads:/app/uploads \
   --restart unless-stopped \
-  fileuploadportal
+  williswschan/fileuploadportal:latest
 
 # View logs
 docker logs -f fileuploadportal
@@ -98,8 +116,12 @@ docker stop fileuploadportal
 docker rm fileuploadportal
 ```
 
-### Rebuild After Code Changes
+### Build Locally (For Development)
 ```bash
+# Build image from source
+docker build -t fileuploadportal .
+
+# Or rebuild with Docker Compose
 docker compose up -d --build
 ```
 

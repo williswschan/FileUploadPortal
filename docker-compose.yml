@@ -1,7 +1,6 @@
 services:
   web:
-    build: .
-    image: fileuploadportal
+    image: williswschan/fileuploadportal:latest
     container_name: mymsngroup-portal
     ports:
       - "5000:5000"
