@@ -79,23 +79,23 @@ docker compose up -d
 ### Manual Docker Commands
 ```bash
 # Build image
-docker build -t mymsngroup-portal .
+docker build -t fileuploadportal .
 
 # Run container
 docker run -d \
-  --name mymsngroup-portal \
+  --name fileuploadportal \
   -p 5000:5000 \
   -e ADMIN_PASSWORD="your-password" \
   -v ./uploads:/app/uploads \
   --restart unless-stopped \
-  mymsngroup-portal
+  fileuploadportal
 
 # View logs
-docker logs -f mymsngroup-portal
+docker logs -f fileuploadportal
 
 # Stop and remove
-docker stop mymsngroup-portal
-docker rm mymsngroup-portal
+docker stop fileuploadportal
+docker rm fileuploadportal
 ```
 
 ### Rebuild After Code Changes
@@ -142,23 +142,6 @@ MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB
 Edit `app.py` line 231:
 ```python
 app.run(debug=True, host='0.0.0.0', port=5000)
-```
-
-## Firewall (Linux)
-```bash
-# Ubuntu/Debian
-sudo ufw allow 5000/tcp
-
-# CentOS/RHEL
-sudo firewall-cmd --permanent --add-port=5000/tcp
-sudo firewall-cmd --reload
-```
-
-## Production Deployment
-Use Gunicorn:
-```bash
-pip3 install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
 ```
 
 ---
