@@ -10,7 +10,7 @@ app.secret_key = secrets.token_hex(32)  # Generate a secure secret key
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
-MAX_CONTENT_LENGTH = 5 * 1024 * 1024 * 1024  # 5GB in bytes
+MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB in bytes
 # ALLOWED_EXTENSIONS - removed to allow all file types
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -228,7 +228,7 @@ def admin_logout():
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
-    flash('File too large! Maximum file size is 5GB.', 'error')
+    flash('File too large! Maximum file size is 2GB.', 'error')
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

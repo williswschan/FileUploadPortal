@@ -41,7 +41,7 @@ python3 app.py
 ⚠️ **IMPORTANT:** Set `ADMIN_PASSWORD` environment variable in production!
 
 ## Features
-- Multi-file upload (up to 5GB per file)
+- Multi-file upload (up to 2GB per file)
 - All file types accepted
 - Admin panel (view, download, delete files)
 - Brute force protection (5 attempts, 1-min lockout)
@@ -135,7 +135,7 @@ docker compose up -d
 ### Change Max File Size
 Edit `app.py` line 13:
 ```python
-MAX_CONTENT_LENGTH = 5 * 1024 * 1024 * 1024  # 5GB
+MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB
 ```
 
 ### Change Port
