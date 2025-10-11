@@ -84,6 +84,15 @@ body {
     color: var(--primary-color);
 }
 
+.nav-link.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.nav-link.active:hover {
+    background: var(--primary-dark);
+}
+
 .nav-link.admin-link {
     background: var(--primary-color);
     color: white;

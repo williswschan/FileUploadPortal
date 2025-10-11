@@ -16,17 +16,17 @@
             </div>
             <div class="nav-menu">
                 {% if session.get('admin_logged_in') %}
-                    <a href="{{ url_for('admin_panel') }}" class="nav-link">
+                    <a href="{{ url_for('admin_panel') }}" class="nav-link {% if request.endpoint == 'admin_panel' %}active{% endif %}">
                         <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
                     <a href="{{ url_for('admin_logout') }}" class="nav-link">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 {% else %}
-                    <a href="{{ url_for('index') }}" class="nav-link">
+                    <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="{{ url_for('admin_login') }}" class="nav-link admin-link">
+                    <a href="{{ url_for('admin_login') }}" class="nav-link {% if request.endpoint == 'admin_login' %}active{% endif %}">
                         <i class="fas fa-lock"></i> Admin
                     </a>
                 {% endif %}

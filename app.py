@@ -14,11 +14,13 @@ MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB in bytes
 # ALLOWED_EXTENSIONS - removed to allow all file types
 
 # Version Information
-APP_VERSION = "1.2"
+APP_VERSION = "1.4"
 VERSION_HISTORY = {
     "1.0": "Initial release - Basic file upload functionality",
     "1.1": "Added health endpoint, original filename support, Docker configuration",
-    "1.2": "Updated file size limit to 2GB for better browser compatibility"
+    "1.2": "Updated file size limit to 2GB for better browser compatibility",
+    "1.3": "Added active state highlighting for navigation tabs",
+    "1.4": "Fixed Admin tab to only highlight when active (not always red)"
 }
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
