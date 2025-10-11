@@ -13,6 +13,14 @@ UPLOAD_FOLDER = 'uploads'
 MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB in bytes
 # ALLOWED_EXTENSIONS - removed to allow all file types
 
+# Version Information
+APP_VERSION = "1.2"
+VERSION_HISTORY = {
+    "1.0": "Initial release - Basic file upload functionality",
+    "1.1": "Added health endpoint, original filename support, Docker configuration",
+    "1.2": "Updated file size limit to 2GB for better browser compatibility"
+}
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
@@ -50,12 +58,12 @@ def get_file_size(filepath):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', version=APP_VERSION, version_history=VERSION_HISTORY)
 
 @app.route('/health')
 def health():
     """Simple health check endpoint for monitoring systems"""
-    return "OK"
+    return f"OK v{APP_VERSION}"
 
 @app.route('/upload', methods=['POST'])
 def upload_file():

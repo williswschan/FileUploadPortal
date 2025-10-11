@@ -522,6 +522,17 @@ body {
     line-height: 1.6;
 }
 
+.version-info {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.version-info small {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
 /* Auth Section */
 .auth-section {
     max-width: 900px;
