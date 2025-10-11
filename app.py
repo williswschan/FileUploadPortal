@@ -4,6 +4,9 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, timedelta
 import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)  # Generate a secure secret key
@@ -14,13 +17,14 @@ MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB in bytes
 # ALLOWED_EXTENSIONS - removed to allow all file types
 
 # Version Information
-APP_VERSION = "1.4"
+APP_VERSION = "1.5"
 VERSION_HISTORY = {
     "1.0": "Initial release - Basic file upload functionality",
     "1.1": "Added health endpoint, original filename support, Docker configuration",
     "1.2": "Updated file size limit to 2GB for better browser compatibility",
     "1.3": "Added active state highlighting for navigation tabs",
-    "1.4": "Fixed Admin tab to only highlight when active (not always red)"
+    "1.4": "Fixed Admin tab to only highlight when active (not always red)",
+    "1.5": "Added email notification system for file uploads"
 }
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -33,6 +37,21 @@ ADMIN_PASSWORD_PLAIN = os.environ.get('ADMIN_PASSWORD', 'admin123')
 if ADMIN_PASSWORD_PLAIN == 'admin123':
     print("⚠️  WARNING: Using default password! Set ADMIN_PASSWORD environment variable in production.")
 ADMIN_PASSWORD_HASH = generate_password_hash(ADMIN_PASSWORD_PLAIN)
+
+# Email notification configuration
+EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
+EMAIL_RECIPIENT = os.environ.get('EMAIL_RECIPIENT')
+SMTP_SERVER = os.environ.get('SMTP_SERVER')
+SMTP_PORT = int(os.environ.get('SMTP_PORT', '25'))
+SMTP_USERNAME = os.environ.get('SMTP_USERNAME')
+SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD')
+
+# Check if email notification is configured (SMTP_USERNAME and SMTP_PASSWORD are optional)
+EMAIL_ENABLED = all([EMAIL_SENDER, EMAIL_RECIPIENT, SMTP_SERVER])
+if EMAIL_ENABLED:
+    print("✅ Email notifications enabled")
+else:
+    print("ℹ️  Email notifications disabled (missing environment variables)")
 
 # Create upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
@@ -58,6 +77,64 @@ def get_file_size(filepath):
         size /= 1024.0
     return f"{size:.2f} TB"
 
+def send_upload_notification(uploaded_files, client_ip):
+    """Send email notification when files are uploaded"""
+    if not EMAIL_ENABLED:
+        return False
+    
+    try:
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_SENDER
+        msg['To'] = EMAIL_RECIPIENT
+        msg['Subject'] = f"📁 File Upload Notification - {len(uploaded_files)} file(s) uploaded"
+        
+        # Create email body
+        body = f"""
+Hello,
+
+A file upload has been completed on the MYMSNGROUP File Upload Portal.
+
+📊 Upload Details:
+• Number of files: {len(uploaded_files)}
+• Upload time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+• Client IP: {client_ip}
+• Portal version: {APP_VERSION}
+
+📋 Uploaded Files:
+"""
+        
+        for i, file_info in enumerate(uploaded_files, 1):
+            body += f"  {i}. {file_info['name']} ({file_info['size']})\n"
+        
+        body += f"""
+🔗 Access the admin panel to view and manage these files.
+
+Best regards,
+MYMSNGROUP File Upload Portal
+"""
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Send email
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        
+        # Only use TLS and authentication if credentials are provided
+        if SMTP_USERNAME and SMTP_PASSWORD:
+            server.starttls()
+            server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        
+        text = msg.as_string()
+        server.sendmail(EMAIL_SENDER, EMAIL_RECIPIENT, text)
+        server.quit()
+        
+        print(f"✅ Email notification sent to {EMAIL_RECIPIENT}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Failed to send email notification: {str(e)}")
+        return False
+
 @app.route('/')
 def index():
     return render_template('index.html', version=APP_VERSION, version_history=VERSION_HISTORY)
@@ -81,6 +158,8 @@ def upload_file():
     
     uploaded_count = 0
     failed_count = 0
+    uploaded_files = []  # Store info about successfully uploaded files
+    client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR', 'Unknown'))
     
     for file in files:
         if file and file.filename:
@@ -91,9 +170,18 @@ def upload_file():
             try:
                 file.save(filepath)
                 uploaded_count += 1
+                # Store file info for email notification
+                uploaded_files.append({
+                    'name': filename,
+                    'size': get_file_size(filepath)
+                })
             except Exception as e:
                 failed_count += 1
                 flash(f'Error uploading {filename}: {str(e)}', 'error')
+    
+    # Send email notification if files were uploaded and email is enabled
+    if uploaded_count > 0 and EMAIL_ENABLED:
+        send_upload_notification(uploaded_files, client_ip)
     
     # Show summary message
     if uploaded_count > 0:
