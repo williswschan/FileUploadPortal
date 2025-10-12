@@ -55,13 +55,16 @@ else:
     print("ℹ️  Email notifications disabled (missing environment variables)")
 
 # Signal notification configuration
-SIGNAL_API_URL = os.environ.get('SIGNAL_API_URL', 'http://signal-api.mymsngroup.com/v2/send')
-SIGNAL_NUMBER = os.environ.get('SIGNAL_NUMBER', '+85296410871')
-SIGNAL_RECIPIENT = os.environ.get('SIGNAL_RECIPIENT', '+85296410871')
+SIGNAL_API_URL = os.environ.get('SIGNAL_API_URL')
+SIGNAL_NUMBER = os.environ.get('SIGNAL_NUMBER')
+SIGNAL_RECIPIENT = os.environ.get('SIGNAL_RECIPIENT')
 
-# Signal is enabled by default (uses hardcoded defaults if env vars not set)
-SIGNAL_ENABLED = True
-print(f"✅ Signal notifications enabled - sending to {SIGNAL_RECIPIENT}")
+# Signal is enabled only if all environment variables are set
+SIGNAL_ENABLED = all([SIGNAL_API_URL, SIGNAL_NUMBER, SIGNAL_RECIPIENT])
+if SIGNAL_ENABLED:
+    print(f"✅ Signal notifications enabled - sending to {SIGNAL_RECIPIENT}")
+else:
+    print("ℹ️  Signal notifications disabled (missing environment variables)")
 
 # Create upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
