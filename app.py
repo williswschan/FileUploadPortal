@@ -7,6 +7,9 @@ import secrets
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import requests
+import json
+import threading
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)  # Generate a secure secret key
@@ -160,12 +163,17 @@ def send_signal_msg(message):
         url = SIGNAL_API_URL
         recipients = [SIGNAL_RECIPIENT]
         number = SIGNAL_NUMBER
-        message = str(message)
-        message = message.replace('"', '\\"')
+        
+        # Use proper JSON encoding instead of string formatting
+        payload = {
+            "message": str(message),
+            "number": number,
+            "recipients": recipients
+        }
+        
         headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
-        payload = '{"message": "%s", "number": "%s", "recipients": ["%s"]}' % (message, number, recipients[0])
 
-        response = requests.post(url, data=payload.encode(), headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
         print(f"Signal API Response Status: {response.status_code}")
         print(f"Signal API Response: {response.text}")
         
@@ -251,13 +259,25 @@ def upload_file():
                 failed_count += 1
                 flash(f'Error uploading {filename}: {str(e)}', 'error')
     
-    # Send email notification if files were uploaded and email is enabled
-    if uploaded_count > 0 and EMAIL_ENABLED:
-        send_upload_notification(uploaded_files, client_ip)
-    
-    # Send Signal notification if files were uploaded and Signal is enabled
-    if uploaded_count > 0 and SIGNAL_ENABLED:
-        send_upload_signal_notification(uploaded_files, client_ip)
+    # Send notifications in background threads for immediate response
+    if uploaded_count > 0:
+        # Send email notification in background thread if enabled
+        if EMAIL_ENABLED:
+            email_thread = threading.Thread(
+                target=send_upload_notification,
+                args=(uploaded_files, client_ip),
+                daemon=True
+            )
+            email_thread.start()
+        
+        # Send Signal notification in background thread if enabled
+        if SIGNAL_ENABLED:
+            signal_thread = threading.Thread(
+                target=send_upload_signal_notification,
+                args=(uploaded_files, client_ip),
+                daemon=True
+            )
+            signal_thread.start()
     
     # Show summary message
     if uploaded_count > 0:
