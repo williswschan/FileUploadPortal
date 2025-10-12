@@ -17,14 +17,15 @@ MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB in bytes
 # ALLOWED_EXTENSIONS - removed to allow all file types
 
 # Version Information
-APP_VERSION = "1.5"
+APP_VERSION = "1.6"
 VERSION_HISTORY = {
     "1.0": "Initial release - Basic file upload functionality",
     "1.1": "Added health endpoint, original filename support, Docker configuration",
     "1.2": "Updated file size limit to 2GB for better browser compatibility",
     "1.3": "Added active state highlighting for navigation tabs",
     "1.4": "Fixed Admin tab to only highlight when active (not always red)",
-    "1.5": "Added email notification system for file uploads"
+    "1.5": "Added email notification system for file uploads",
+    "1.6": "Added Signal messaging notification for file uploads"
 }
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -52,6 +53,15 @@ if EMAIL_ENABLED:
     print("✅ Email notifications enabled")
 else:
     print("ℹ️  Email notifications disabled (missing environment variables)")
+
+# Signal notification configuration
+SIGNAL_API_URL = os.environ.get('SIGNAL_API_URL', 'http://signal-api.mymsngroup.com/v2/send')
+SIGNAL_NUMBER = os.environ.get('SIGNAL_NUMBER', '+85296410871')
+SIGNAL_RECIPIENT = os.environ.get('SIGNAL_RECIPIENT', '+85296410871')
+
+# Signal is enabled by default (uses hardcoded defaults if env vars not set)
+SIGNAL_ENABLED = True
+print(f"✅ Signal notifications enabled - sending to {SIGNAL_RECIPIENT}")
 
 # Create upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
@@ -135,6 +145,65 @@ MYMSNGROUP File Upload Portal
         print(f"❌ Failed to send email notification: {str(e)}")
         return False
 
+def send_signal_msg(message):
+    """
+    Send Signal notification via Signal API
+    Revised Signal notification function with proper success detection
+    """
+    if not SIGNAL_ENABLED:
+        return False
+    
+    try:
+        url = SIGNAL_API_URL
+        recipients = [SIGNAL_RECIPIENT]
+        number = SIGNAL_NUMBER
+        message = str(message)
+        message = message.replace('"', '\\"')
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        payload = '{"message": "%s", "number": "%s", "recipients": ["%s"]}' % (message, number, recipients[0])
+
+        response = requests.post(url, data=payload.encode(), headers=headers)
+        print(f"Signal API Response Status: {response.status_code}")
+        print(f"Signal API Response: {response.text}")
+        
+        # KEY FIX: Status 201 means success in HTTP!
+        if response.status_code in [200, 201]:
+            print("✅ Signal message sent successfully!")
+            return True
+        else:
+            print("❌ Failed to send Signal message")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Signal Exception: {e}")
+        return False
+
+def send_upload_signal_notification(uploaded_files, client_ip):
+    """Send Signal notification when files are uploaded"""
+    if not SIGNAL_ENABLED:
+        return False
+    
+    try:
+        # Create Signal message
+        message = f"📁 File Upload Notification\n\n"
+        message += f"Number of files: {len(uploaded_files)}\n"
+        message += f"Upload time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        message += f"Client IP: {client_ip}\n"
+        message += f"Portal version: {APP_VERSION}\n\n"
+        message += f"Uploaded Files:\n"
+        
+        for i, file_info in enumerate(uploaded_files, 1):
+            message += f"  {i}. {file_info['name']} ({file_info['size']})\n"
+        
+        message += f"\nMYMSNGROUP File Upload Portal"
+        
+        # Send Signal message
+        return send_signal_msg(message)
+        
+    except Exception as e:
+        print(f"❌ Failed to send Signal notification: {str(e)}")
+        return False
+
 @app.route('/')
 def index():
     return render_template('index.html', version=APP_VERSION, version_history=VERSION_HISTORY)
@@ -182,6 +251,10 @@ def upload_file():
     # Send email notification if files were uploaded and email is enabled
     if uploaded_count > 0 and EMAIL_ENABLED:
         send_upload_notification(uploaded_files, client_ip)
+    
+    # Send Signal notification if files were uploaded and Signal is enabled
+    if uploaded_count > 0 and SIGNAL_ENABLED:
+        send_upload_signal_notification(uploaded_files, client_ip)
     
     # Show summary message
     if uploaded_count > 0:
