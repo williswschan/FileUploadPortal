@@ -459,7 +459,7 @@ def admin_logout():
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
-    flash('File too large! Maximum file size is 2GB.', 'error')
+    flash('Upload too large! Maximum total upload size is 2GB.', 'error')
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

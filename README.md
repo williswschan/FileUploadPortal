@@ -56,11 +56,13 @@ python3 app.py
 ⚠️ **IMPORTANT:** Set `ADMIN_PASSWORD` environment variable in production!
 
 ## Features
-- Multi-file upload (up to 2GB per file)
+- Multi-file upload (2GB total limit)
 - All file types accepted
 - Admin panel (view, download, delete files)
+- Delete all files with one click
 - Brute force protection (5 attempts, 1-min lockout)
 - Responsive design (mobile, tablet, desktop)
+- Email & Signal notifications (optional)
 
 ## Docker Deployment
 
