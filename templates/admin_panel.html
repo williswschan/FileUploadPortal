@@ -24,9 +24,16 @@
         <div class="files-section">
             <div class="section-header">
                 <h2><i class="fas fa-folder-open"></i> Uploaded Files</h2>
-                {% if files %}
-                <span class="file-count">{{ files|length }} file(s)</span>
-                {% endif %}
+                <div class="section-actions">
+                    {% if files %}
+                    <span class="file-count">{{ files|length }} file(s)</span>
+                    <a href="{{ url_for('admin_delete_all') }}" 
+                       class="btn btn-danger btn-delete-all" 
+                       onclick="return confirm('⚠️ WARNING: This will delete ALL {{ files|length }} file(s)!\n\nThis action cannot be undone.\n\nAre you absolutely sure you want to delete all files?')">
+                        <i class="fas fa-trash-alt"></i> Delete All Files
+                    </a>
+                    {% endif %}
+                </div>
             </div>
             
             {% if files %}

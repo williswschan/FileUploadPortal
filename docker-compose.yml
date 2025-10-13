@@ -1,6 +1,7 @@
 services:
   web:
-    image: williswschan/fileuploadportal:latest
+    build: .
+    image: fileuploadportal
     container_name: fileuploadportal
     ports:
       - "5000:5000"
@@ -16,5 +17,6 @@ services:
 
 networks:
   fileuploadportal-network:
+    name: fileuploadportal-network
     driver: bridge
 

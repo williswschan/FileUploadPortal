@@ -756,9 +756,41 @@ body {
     gap: 0.5rem;
 }
 
+.section-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .file-count {
     color: var(--text-secondary);
     font-weight: 600;
+}
+
+.btn-delete-all {
+    background: #dc3545;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid #dc3545;
+}
+
+.btn-delete-all:hover {
+    background: #c82333;
+    border-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete-all i {
+    font-size: 1rem;
 }
 
 /* Files Table */

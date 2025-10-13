@@ -20,7 +20,7 @@ MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB in bytes
 # ALLOWED_EXTENSIONS - removed to allow all file types
 
 # Version Information
-APP_VERSION = "1.6"
+APP_VERSION = "1.7"
 VERSION_HISTORY = {
     "1.0": "Initial release - Basic file upload functionality",
     "1.1": "Added health endpoint, original filename support, Docker configuration",
@@ -28,7 +28,8 @@ VERSION_HISTORY = {
     "1.3": "Added active state highlighting for navigation tabs",
     "1.4": "Fixed Admin tab to only highlight when active (not always red)",
     "1.5": "Added email notification system for file uploads",
-    "1.6": "Added Signal messaging notification for file uploads"
+    "1.6": "Added Signal messaging notification for file uploads",
+    "1.7": "Added Delete All Files feature and background threading for notifications"
 }
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -411,6 +412,42 @@ def admin_delete(filename):
             flash('File not found', 'error')
     except Exception as e:
         flash(f'Error deleting file: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_panel'))
+
+@app.route('/admin/delete-all')
+def admin_delete_all():
+    if not session.get('admin_logged_in'):
+        flash('Please login first', 'error')
+        return redirect(url_for('admin_login'))
+    
+    deleted_count = 0
+    failed_count = 0
+    
+    try:
+        # Get all files in upload folder
+        for filename in os.listdir(app.config['UPLOAD_FOLDER']):
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            
+            # Skip if it's a directory or hidden file
+            if os.path.isfile(filepath) and not filename.startswith('.'):
+                try:
+                    os.remove(filepath)
+                    deleted_count += 1
+                except Exception as e:
+                    failed_count += 1
+                    print(f"Failed to delete {filename}: {str(e)}")
+        
+        if deleted_count > 0:
+            flash(f'Successfully deleted {deleted_count} file(s)', 'success')
+        else:
+            flash('No files to delete', 'info')
+        
+        if failed_count > 0:
+            flash(f'Failed to delete {failed_count} file(s)', 'error')
+            
+    except Exception as e:
+        flash(f'Error during bulk delete: {str(e)}', 'error')
     
     return redirect(url_for('admin_panel'))
 
