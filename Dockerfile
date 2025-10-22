@@ -26,8 +26,8 @@ COPY . .
 # Create uploads directory with proper permissions
 RUN mkdir -p uploads && chmod 755 uploads
 
-# Expose port 5000
-EXPOSE 5000
+# Expose port 80
+EXPOSE 80
 
 # Run the application
 CMD ["python", "app.py"]

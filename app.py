@@ -20,7 +20,7 @@ MAX_CONTENT_LENGTH = 2 * 1024 * 1024 * 1024  # 2GB in bytes
 # ALLOWED_EXTENSIONS - removed to allow all file types
 
 # Version Information
-APP_VERSION = "1.7"
+APP_VERSION = "1.8"
 VERSION_HISTORY = {
     "1.0": "Initial release - Basic file upload functionality",
     "1.1": "Added health endpoint, original filename support, Docker configuration",
@@ -29,7 +29,8 @@ VERSION_HISTORY = {
     "1.4": "Fixed Admin tab to only highlight when active (not always red)",
     "1.5": "Added email notification system for file uploads",
     "1.6": "Added Signal messaging notification for file uploads",
-    "1.7": "Added Delete All Files feature and background threading for notifications"
+    "1.7": "Added Delete All Files feature and background threading for notifications",
+    "1.8": "Changed app to run on port 80 with Docker port mapping 5000:80"
 }
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -464,5 +465,5 @@ def request_entity_too_large(error):
 
 if __name__ == '__main__':
     # For production, use a proper WSGI server like gunicorn
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=80)
 

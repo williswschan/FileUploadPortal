@@ -4,7 +4,7 @@ services:
     image: fileuploadportal
     container_name: fileuploadportal
     ports:
-      - "5000:5000"
+      - "5000:80"
     volumes:
       # Mount uploads directory for persistent storage
       - ./uploads:/app/uploads
